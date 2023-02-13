@@ -26,6 +26,23 @@ flask --app flaskr/ --debug run
 
 ## How it works
 
+### Account Creation and Activation
+
+1) The user sends a request to create a new account passing the following
+    parameters:
+    - email
+    - firstname and lastname
+    - pwd_salt: The user (the app) generates the password salt itself
+    - pwd_hash: `hash(password "+" pwd_salt)`
+2) An account activation mail is sent to the users email address. The email
+    contains an activation code.
+3) The user sends a request to activate the account passing the activation code
+    received in the email.
+
+The following sequence diagram shows the communication between the parties:
+
+![Account Creation and Activation Sequence Diagram](images/create_and_activate_account_sequence_diagram.png)
+
 ### Authentication
 
 1) The user first requests the password salt used for hashing the password.
