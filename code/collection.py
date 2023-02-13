@@ -67,8 +67,21 @@ oJYYMvZTWKSbkIcPz4ud5l7PVBbnAT542QPuFESQa/mC6KiePFh+x4fjrfg4rNuL
 7hEZ6LtqaZPX61Btv59C2cvkZlUVuFAiy6JPMr44R+Jd3XzzY2Lp3HR9V3Om
 -----END RSA PRIVATE KEY-----"""
 
+
+import random
+from string import ascii_uppercase, digits
+
+
+def generate_random_string(length):
+    letters = ascii_uppercase + digits
+    return ''.join(random.choice(letters) for i in range(length))
+
+
+def generate_activation_code():
+    return generate_random_string(4) + '-' + generate_random_string(4) + '-' + generate_random_string(4) + '-' + generate_random_string(4)
+
 # Function copied from "https://github.com/python/cpython/blob/b2076b00710c4366dcfe6cd236e480d68a3c38b7/Lib/distutils/util.py#L308"
-def strtobool (val):
+def strtobool(val):
     """Convert a string representation of truth to true (1) or false (0).
     True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
     are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
@@ -83,20 +96,20 @@ def strtobool (val):
         raise ValueError("invalid truth value %r" % (val,))
 
 
-def get_response_template(payload = False):
+def get_response_template(payload=False):
     response = {
         'executed': True,
         'errors': [],
         'warnings': []
     }
-    
+
     if payload:
         response['payload'] = {}
 
     return response
 
 
-def add_error_to_response(response, err_id, err_msg, executed = False):
+def add_error_to_response(response, err_id, err_msg, executed=False):
     response['executed'] = executed
     error = {
         'err_id': err_id,
@@ -117,7 +130,7 @@ def add_warning_to_response(response, warn_id, warn_msg):
     return response
 
 
-def check_argument_not_null(response, argument, argument_name, err_id = -1):
+def check_argument_not_null(response, argument, argument_name, err_id=-1):
     if argument is None:
         response = add_error_to_response(
             response,
@@ -125,11 +138,11 @@ def check_argument_not_null(response, argument, argument_name, err_id = -1):
             f'Argument missing: {argument_name}',
             False
         )
-    
+
     return response
 
 
-def check_argument_type(response, argument, argument_name, data_type, err_id = -1):
+def check_argument_type(response, argument, argument_name, data_type, err_id=-1):
     try:
         if data_type == 'int':
             argument = int(argument)
@@ -144,5 +157,23 @@ def check_argument_type(response, argument, argument_name, data_type, err_id = -
             err_id,
             f'Could not convert "{argument_name}" to {data_type}.'
         )
-    
+
     return response, argument
+
+
+def send_email(recipient, subject, message):
+    with open('email.txt', 'a') as file:
+        file.write(f'E-Mail to: {recipient}\n')
+        file.write(f'Subject: {subject}\n')
+        file.write(f'Message: {message}\n')
+
+
+def send_account_activation_mail(email, firstname, lastname, created, activation_code):
+    subject = 'Welcome onboard!'
+    
+    message = ''
+    message = message + f'Hello {firstname} {lastname}!'
+    message = message + f'You have created an account on {created}.'
+    message = message + f'Please use this activation code to activate your account: "{activation_code}".'
+    
+    send_email(email, subject, message)

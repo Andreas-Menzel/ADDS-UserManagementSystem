@@ -37,7 +37,7 @@ def request_authentication():
 
     db = get_db()
 
-    # Check if active drone with given id exists
+    # Check if user with given email exists
     db_user_info = db.execute(
         'SELECT * FROM users WHERE email = ?', (email,)).fetchone()
     if db_user_info is None:
@@ -48,6 +48,18 @@ def request_authentication():
             False
         )
 
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+    
+    if db_user_info['activation_time'] is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Please activate you account first.',
+            False
+        )
+    
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
@@ -77,7 +89,7 @@ def authenticate():
 
     db = get_db()
 
-    # Check if active drone with given id exists
+    # Check if user with given email exists
     db_user_info = db.execute(
         'SELECT * FROM users WHERE email = ?', (email,)).fetchone()
     if db_user_info is None:
@@ -88,6 +100,18 @@ def authenticate():
             False
         )
 
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+    
+    if db_user_info['activation_time'] is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Please activate you account first.',
+            False
+        )
+    
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)

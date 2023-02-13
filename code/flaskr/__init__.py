@@ -35,6 +35,9 @@ def create_app(test_config=None):
     from . import authentication
     app.register_blueprint(authentication.bp)
 
+    from . import account
+    app.register_blueprint(account.bp)
+
     #@app.route('/')
     #def index():
     #    return redirect('/ui')
